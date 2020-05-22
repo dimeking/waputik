@@ -21,24 +21,30 @@ def create_spark_session():
     return spark
 
 
-# def process_song_data(spark, input_data, output_data):
-#     # get filepath to song data file
-#     song_data = 
+def process_song_data(spark, input_data, output_data):
+    # get filepath to song data file
+    song_data = input_data+'song_data/[A-Z]/[A-Z]/[A-Z]/*.json'
     
-#     # read song data file
-#     df = 
+    # read song data file
+    df = spark.read.json(song_data)
 
-#     # extract columns to create songs table
-#     songs_table = 
+    # extract columns to create songs table
+    songs_table = df.select('song_id', 'title', 'artist_id', 'year', 'duration').dropDuplicates()
     
-#     # write songs table to parquet files partitioned by year and artist
-#     songs_table
-
-#     # extract columns to create artists table
-#     artists_table = 
+    # write songs table to parquet files partitioned by year and artist
+    songs_table.write.mode('overwrite').partitionBy("year","artist_id").parquet(output_data+"songs_table.parquet")
     
-#     # write artists table to parquet files
-#     artists_table
+    # extract columns to create artists table
+    artists_table = df.selectExpr(
+        'artist_id', 
+        'artist_name as name', 
+        'artist_location as location', 
+        'artist_latitude as lattitude', 
+        'artist_longitude as longitude'
+    ).dropDuplicates()
+    
+    # write artists table to parquet files
+    artists_table.write.mode('overwrite').parquet(output_data+"artists_table.parquet")
 
 
 # def process_log_data(spark, input_data, output_data):
@@ -83,11 +89,16 @@ def create_spark_session():
 
 def main():
     spark = create_spark_session()
-    input_data = "s3a://udacity-dend/"
-    output_data = ""
+
+#     input_data = "s3a://udacity-dend/"
+    input_data = "s3a://hariraja-playground/"
+    output_data = "s3a://hariraja-playground/info/"
     
-    # process_song_data(spark, input_data, output_data)    
-    # process_log_data(spark, input_data, output_data)
+#     input_data = "./data/"
+#     output_data = "./info/"
+    
+    process_song_data(spark, input_data, output_data)    
+#     process_log_data(spark, input_data, output_data)
 
 
 if __name__ == "__main__":
