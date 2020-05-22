@@ -52,8 +52,8 @@ def process_song_data(spark, input_data, output_data):
 
 def process_log_data(spark, input_data, output_data):
     # get filepath to log data file
-    log_data =input_data+'log-data'
-#     log_data = input_data+'log_data/[0-9]*/[0-9]*/*.json'
+#     log_data =input_data+'log-data'
+    log_data = input_data+'log_data/[0-9]*/[0-9]*/*.json'
 
     # read log data file
     df = spark.read.json(log_data)
@@ -130,11 +130,11 @@ def main():
     spark = create_spark_session()
 
 #     input_data = "s3a://udacity-dend/"
-#     input_data = "s3a://hariraja-playground/"
-#     output_data = "s3a://hariraja-playground/info/"
+    input_data = "s3a://hariraja-playground/"
+    output_data = "s3a://hariraja-playground/info/"
     
-    input_data = "./data/"
-    output_data = "./info/"
+#     input_data = "./data/"
+#     output_data = "./info/"
     
     process_song_data(spark, input_data, output_data)    
     process_log_data(spark, input_data, output_data)
