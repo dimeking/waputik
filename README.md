@@ -31,6 +31,7 @@ $ ssh -i ~/<your_file.pem> etl.py hadoop@<your_master_public_dns>
 ```sh
 $ spark-submit --master yarn etl.py
 ```
+* Output parquet files are available at s3a://hr-dend/sparkify_tables
 
 ### Files
 | Filename |  |

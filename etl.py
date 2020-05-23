@@ -41,7 +41,7 @@ def process_song_data(spark, input_data, output_data):
     df = spark.read.json(song_data)
 
     # extract columns to create songs table
-    songs_table = df.select('song_id', 'title', 'artist_id', 'year', 'duration').orderBy('song_id').dropDuplicates()
+    songs_table = df.select('song_id', 'title', 'artist_id', 'year', 'duration')
     
     # write songs table to parquet files partitioned by year and artist
     songs_table.write.mode('overwrite').partitionBy("year","artist_id").parquet(output_data+"songs_table.parquet")
@@ -53,7 +53,7 @@ def process_song_data(spark, input_data, output_data):
         'artist_location as location', 
         'artist_latitude as lattitude', 
         'artist_longitude as longitude'
-    ).orderBy('artist_id').dropDuplicates()
+    ).dropDuplicates()
     
     # write artists table to parquet files
     artists_table.write.mode('overwrite').parquet(output_data+"artists_table.parquet")
@@ -83,7 +83,7 @@ def process_log_data(spark, input_data, output_data):
         'lastName as last_name', 
         'gender', 
         'level'
-    ).orderBy('user_id').dropDuplicates()
+    ).dropDuplicates()
     
     # write users table to parquet files
     users_table.write.mode('overwrite').parquet(output_data+"users_table.parquet")
@@ -103,7 +103,7 @@ def process_log_data(spark, input_data, output_data):
         'cast(weekofyear(datetime) as short) as week',
         'cast(month(datetime) as short) as month', 
         'cast(year(datetime) as short) as year'
-    ).withColumn('weekday', get_weekday('start_time')).orderBy('start_time').dropDuplicates()
+    ).withColumn('weekday', get_weekday('start_time')).dropDuplicates()
     
     # write time table to parquet files partitioned by year and month
     time_table.write.mode('overwrite').partitionBy("year","month").parquet(output_data+"time_table.parquet")
@@ -134,7 +134,7 @@ def process_log_data(spark, input_data, output_data):
         'userAgent as user_agent',
         'cast(month(datetime) as short) as month', 
         'cast(year(datetime) as short) as year'
-    ).orderBy('songplay_id').dropDuplicates()
+    )
 
     # write songplays table to parquet files partitioned by year and month
     songplays_table.write.mode('overwrite').partitionBy("year","month").parquet(output_data+"songplays_table.parquet")
@@ -151,8 +151,8 @@ def main():
     spark = create_spark_session()
 
     input_data = "s3a://udacity-dend/"
-    # input_data = "s3a://hariraja-playground/"
-    output_data = "s3a://hariraja-playground/info/"
+    # input_data = "s3a://hr-dend/"
+    output_data = "s3a://hr-dend/sparkify_tables/"
     
 #     input_data = "./data/"
 #     output_data = "./info/"
