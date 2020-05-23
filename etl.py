@@ -9,6 +9,7 @@ from pyspark.sql.functions import year, month, dayofmonth, hour, weekofyear, dat
 from pyspark.sql.functions import monotonically_increasing_id
 from pyspark.sql.types import TimestampType, StringType
 
+# Read config file to collect AWS params. 
 config = configparser.ConfigParser()
 config.read('dl.cfg')
 
@@ -17,6 +18,9 @@ os.environ['AWS_SECRET_ACCESS_KEY']=config['AWS']['AWS_SECRET_ACCESS_KEY']
 
 
 def create_spark_session():
+    """
+    - Create Spark Session    
+    """
     spark = SparkSession \
         .builder \
         .config("spark.jars.packages", "org.apache.hadoop:hadoop-aws:2.7.0") \
@@ -25,6 +29,11 @@ def create_spark_session():
 
 
 def process_song_data(spark, input_data, output_data):
+    """
+    - Load all the song data json files from S3 onto AWS EMR Spark Cluster.      
+    - Transform all the raw song data files to songs & artists dimensional Spark Dataframes.     
+    - Finally, persist dimensional tables onto S3 as partitioned parquet files. 
+    """    
     # get filepath to song data file
     song_data = input_data+'song_data/[A-Z]/[A-Z]/[A-Z]/*.json'
     
@@ -51,8 +60,14 @@ def process_song_data(spark, input_data, output_data):
 
 
 def process_log_data(spark, input_data, output_data):
+    """
+    - Load all the log & song data json files from S3 onto Spark Dataframe.      
+    - Transform all the raw log data files to users & times dimensional dataframes.     
+    - Join log & song data to create songplays fact table dataframes.     
+    - Finally, persist analytics tables onto S3 as partitioned parquet files. 
+    """    
+
     # get filepath to log data file
-#     log_data =input_data+'log-data'
     log_data = input_data+'log_data/[0-9]*/[0-9]*/*.json'
 
     # read log data file
@@ -127,10 +142,16 @@ def process_log_data(spark, input_data, output_data):
 
 
 def main():
+    """
+    - Create Spark Session and Read config file to collect AWS params.     
+    - Load all the song & log data json files from S3 onto AWS EMR Spark Cluster.      
+    - Transform all the raw data to analytics tables via Spark Dataframes on EMR.     
+    - Finally, persist analytics tables onto S3 as partitioned columnar storage (parquet). 
+    """    
     spark = create_spark_session()
 
-#     input_data = "s3a://udacity-dend/"
-    input_data = "s3a://hariraja-playground/"
+    input_data = "s3a://udacity-dend/"
+    # input_data = "s3a://hariraja-playground/"
     output_data = "s3a://hariraja-playground/info/"
     
 #     input_data = "./data/"
